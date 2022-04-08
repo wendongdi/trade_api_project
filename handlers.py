@@ -193,8 +193,8 @@ def books_handle(instId, datas, source_type="推送"):
 				change_count += 1
 			source_type = "增量推送"
 			checksum = data['checksum']
-			all_bids, b_change_count = Books.update_book(incr_bids, Books.books_data[instId]['bids'], is_bid=True)
-			all_asks, a_change_count = Books.update_book(incr_asks, Books.books_data[instId]['asks'], is_bid=False)
+			all_bids, b_change_count = Books.update_bids(incr_bids, Books.books_data[instId]['bids']), 1
+			all_asks, a_change_count = Books.update_asks(incr_asks, Books.books_data[instId]['asks']), 1
 			change_count += (b_change_count + a_change_count)
 			if change_count <= 0:
 				return
@@ -211,7 +211,7 @@ def books_handle(instId, datas, source_type="推送"):
 						# logging.exception("强刷深度数据失败")
 						return
 				else:
-					logging.warning("过滤异常数据")
+					# logging.debug("过滤异常数据")
 					return
 			else:
 				logging.debug(f"成功合并深度数据\t{instId}")

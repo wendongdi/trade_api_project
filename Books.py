@@ -100,39 +100,46 @@ def sort_num(n):
 		return float(n)
 
 
-def update_book(bs_u, bs_f, is_bid=False):
-	change_count = 0
-	delete_count = 0
-	# 遍历增量
-	for i in bs_u:
-		u_price = i[0]
-		u_pap_num = float(i[1])
-		insert_flag = True
-		for j in bs_f:
-			f_price = i[0]
-			f_pap_num = float(i[1])
-			# 增量更新全量
-			if u_price == f_price:
-				insert_flag = False
-				if u_pap_num <= 0:
-					# 删除
-					bs_f.remove(j)
-					change_count += 1
-					delete_count += 1
+def update_bids(bids_u, bids_p):
+	# bids合并
+	for i in bids_u:
+		bid_price = i[0]
+		for j in bids_p:
+			if bid_price == j[0]:
+				if float(i[1]) <= 0:
+					bids_p.remove(j)
 					break
 				else:
-					# 替换
-					j[1] = i[1]
-					j[2] = i[2]
-					j[3] = i[3]
-					if u_pap_num != f_pap_num: change_count += 1
+					del j[1]
+					j.insert(1, i[1])
 					break
-		# 增量插入全量
-		if insert_flag and u_pap_num > 0:
-			bs_f.append(i)
-			change_count += 1
-	bs_f.sort(key=lambda price:sort_num(price[0]), reverse=is_bid)
-	return bs_f, change_count
+		else:
+			if float(i[1]) > 0:
+				bids_p.append(i)
+	else:
+		bids_p.sort(key=lambda price:sort_num(price[0]), reverse=True)
+	return bids_p
+
+
+def update_asks(asks_u, asks_p):
+	# asks合并
+	for i in asks_u:
+		ask_price = i[0]
+		for j in asks_p:
+			if ask_price == j[0]:
+				if float(i[1]) <= 0:
+					asks_p.remove(j)
+					break
+				else:
+					del j[1]
+					j.insert(1, i[1])
+					break
+		else:
+			if float(i[1]) > 0:
+				asks_p.append(i)
+	else:
+		asks_p.sort(key=lambda price:sort_num(price[0]))
+	return asks_p
 
 
 def check(bids, asks):
