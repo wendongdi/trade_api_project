@@ -33,6 +33,14 @@ def order(instId: str, tdMode: str, side: str, ordType: str, sz: str, clOrdId: s
 	                         , quantity=float(sz)
 	                         , price=float(px)
 	                         , newClientOrderId=clOrdId
+	                         , stopPrice=None
+	                         , closePosition=None
+	                         , activationPrice=None
+	                         , callbackRate=None
+	                         , timeInForce=None
+	                         , workingType=None
+	                         , priceProtect=None
+	                         , newOrderRespType=None
 	                         )
 
 	"""
