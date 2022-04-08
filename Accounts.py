@@ -1,25 +1,44 @@
 f"""
 账号信息
 """
-import OkexRest
+
+from binance.futures import Futures
+
+import utils
+
+client = Futures(key=utils.apikey, secret=utils.secretkey, base_url=utils.api_baseurl)
 
 
 # 账户余额
 def balance(ccy=None):
-	params = {"ccy":ccy} if ccy else {}
-	return OkexRest.request_get("/api/v5/account/balance", params)['data']
+	bares = client.balance()
+
+	# print(json.dumps(bares, indent=4, ensure_ascii=False))
+	def funx(item):
+		return not ccy or item['asset'] == ccy.upper()
+
+	bares = list(filter(funx, bares))
+	return bares
 
 
 # 账户配置
 def config():
-	return OkexRest.request_get("/api/v5/account/config")['data']
+	bares = client.account()
+	# print(json.dumps(bares, indent=4, ensure_ascii=False))
+	return bares
 
 
 # 账户最大可转余额
 def max_withdrawal(ccy=None):
-	params = {"ccy":ccy} if ccy else {}
-	return OkexRest.request_get("/api/v5/account/max-withdrawal", params)['data']
+	bares = client.balance()
+
+	# print(json.dumps(bares, indent=4, ensure_ascii=False))
+	def funx(item):
+		return not ccy or item['asset'] == ccy.upper()
+
+	bares = [{'ccy':item['asset'], 'maxWd':item['maxWithdrawAmount']} for item in list(filter(funx, bares))]
+	return bares
 
 
 if __name__ == '__main__':
-	print(balance("BTC"))
+	print(max_withdrawal('usdt'))

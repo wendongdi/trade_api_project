@@ -5,27 +5,16 @@ import base64
 import datetime
 import hmac
 import json
-import time
-import zlib
 from hmac import HMAC
 
-# apikey = "271c9921-44da-42b1-9b2c-642af69d8afc"
-# secretkey = "17CCB16909B169E2E98338C76F97B962"
-# passPhrase = "Ok18901618665"
+import time
+import zlib
 
-# apikey = "ea028e9c-3eb9-4ca8-a27e-e2b2db270609"
-# secretkey = "B17D67D2E73F069B559DB82A053BCB27"
-# passPhrase = 'Cm2355'
+apikey = "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f"
+secretkey = "d90e4114442e1fd107c1f240eef44bbf7ac0ce2eb0ce54078e270566145e3f54"
+passPhrase = ""
 
-
-# apikey = "1a37f862-aaeb-44a4-857e-fdcdca36481b"
-# secretkey = "A6BFA35FB0EFB350942A5E29945AB3FE"
-# passPhrase = 'D2VGED7jB7T3NNb2'
-
-
-apikey = "a6e78d20-f45f-4557-993f-625005d3d339"
-secretkey = "873E63F1492BC6713F1AE65DB3B9FFD8"
-passPhrase = "FrontierA"
+api_baseurl = "https://testnet.binancefuture.com"
 
 
 def crc32(str):
@@ -88,16 +77,6 @@ class HeaderUtils:
 		header["OK-ACCESS-SIGN"] = sign.decode("utf-8")
 		header["OK-ACCESS-TIMESTAMP"] = timestamp
 		header["OK-ACCESS-PASSPHRASE"] = passPhrase
-		return header
-
-	def get_ws_header(self):
-		timestamp = str(self.get_unix_timestamp())
-		sign = signature(timestamp, "GET", "/users/self/verify", "", secretkey)
-		header = dict()
-		header["apiKey"] = apikey
-		header["sign"] = sign.decode("utf-8")
-		header["timestamp"] = timestamp
-		header["passphrase"] = apikey
 		return header
 
 

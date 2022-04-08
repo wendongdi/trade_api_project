@@ -90,21 +90,3 @@ class WsPublicStrategy(WsStrategy):
 			channels.append({"channel":Channel.TRADES, "instId":instId})
 
 		self.agent.send(utils.gen_send_msg("subscribe", *channels))
-
-
-class WsPrivateStrategy(WsStrategy):
-	def __init__(self, URL: str = WS_PRIVATE_URL):
-		super().__init__(URL)
-
-	def open_login(self):
-		headers = utils.HEADER.get_ws_header()
-		login_msg = utils.gen_send_msg(Operation.LOGIN, headers)
-		self.agent.send(login_msg)
-		time.sleep(1)
-		logging.debug("成功登入～")
-
-	def open_subscribe(self):
-		channels = [
-			{"channel":Channel.BALANCE_AND_POSITION}
-		]
-		self.agent.send(utils.gen_send_msg(Operation.SUBSCRIBE, *channels))

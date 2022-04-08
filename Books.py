@@ -2,6 +2,7 @@ f"""
 行情深度数据
 """
 import logging
+
 import zlib
 
 import OkexRest
