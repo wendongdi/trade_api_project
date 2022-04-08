@@ -3,14 +3,17 @@ f"""
 """
 import logging
 import threading
+import time
 
 import Books
 import Instruments
-import ws_dictionary
 from constants import Currency
 from utils import HeaderUtils
 
 mkt = None
+books_lock: threading.Lock
+trade_lock: threading.Lock
+tick_lock = threading.Lock()
 
 
 def err_handle(json_msg):
@@ -36,13 +39,6 @@ def instruments_handle(ingore_1, datas):
 
 def subscribe_handle(json_msg):
 	logging.info(f"订阅响应消息\t{json_msg}")
-
-
-def data_analysis(title, instId, data):
-	ws_dictionary.data_analysis(title, instId, data)
-
-
-tick_lock = threading.Lock()
 
 
 def tick_handle_proxy(instId: str, datas):
@@ -95,13 +91,12 @@ def tick_handle(instId: str, datas):
 		data['local_timestamp'] = local_unix_ts
 		data['time'] = HeaderUtils.get_timestamp(item_unix_ts, False)
 		data['local_time'] = HeaderUtils.get_timestamp(local_unix_ts, False)
-	# if instId == Currency.BTCUSDT:
-	#     Market.spot_tick_line.append(data)
-	# elif instId == Currency.BTCUSDT_SWAP:
-	#     Market.swap_tick_line.append(data)
 
 
-trade_lock: threading.Lock
+# if instId == Currency.BTCUSDT:
+#     Market.spot_tick_line.append(data)
+# elif instId == Currency.BTCUSDT_SWAP:
+#     Market.swap_tick_line.append(data)
 
 
 def trade_handle_proxy(instId: str, datas):
@@ -158,12 +153,9 @@ def trade_handle(instId: str, datas, source_type="推送"):
 		logging.debug(data)
 		# local_ts_cache[local_ts_key] = (item_unix_ts,data)
 		if instId == Currency.BTCUSDT:
-			mkt.spot_trade_line.append(data)
+			line_append(mkt.spot_trade_line, data)
 		elif instId == Currency.BTCUSDT_SWAP:
-			mkt.swap_trade_line.append(data)
-
-
-books_lock: threading.Lock
+			line_append(mkt.swap_trade_line, data)
 
 
 def books_handle_proxy(instId: str, datas):
@@ -174,11 +166,17 @@ def books_handle_proxy(instId: str, datas):
 		books_lock.release()
 
 
+limit_ts = 0
+
+
 def books_handle(instId, datas, source_type="推送"):
+	global limit_ts
+	change_count = 0
+
 	def update(new_ts: int, new_asks, new_bids):
 		Books.tss[instId] = new_ts
-		Books.books_data[instId]['asks'] = new_asks[:25]
-		Books.books_data[instId]['bids'] = new_bids[:25]
+		Books.books_data[instId]['asks'] = new_asks
+		Books.books_data[instId]['bids'] = new_bids
 
 	logging.debug(f"深度频道推送消息\t{instId}\t{datas}")
 	if len(datas) < 1: return
@@ -189,26 +187,38 @@ def books_handle(instId, datas, source_type="推送"):
 	else:
 		incr_asks = data['asks']
 		incr_bids = data['bids']
-		if 'checksum' not in data:
-			logging.debug(f"全量深度数据\t{instId}")
-			update(ts, incr_asks, incr_bids)
-		else:
+		if 'checksum' in data:
+			if Books.tss[instId] <= 0 or len(Books.books_data[instId]['bids']) < 50 or len(Books.books_data[instId]['asks']) < 50:
+				Books.force_update(instId)
+				change_count += 1
 			source_type = "增量推送"
 			checksum = data['checksum']
-			all_bids = Books.update_bids(incr_bids, Books.books_data[instId]['bids'])
-			all_asks = Books.update_asks(incr_asks, Books.books_data[instId]['asks'])
+			all_bids, b_change_count = Books.update_book(incr_bids, Books.books_data[instId]['bids'], is_bid=True)
+			all_asks, a_change_count = Books.update_book(incr_asks, Books.books_data[instId]['asks'], is_bid=False)
+			change_count += (b_change_count + a_change_count)
+			if change_count <= 0:
+				return
 			check_num = Books.check(all_bids, all_asks)
-			if checksum != check_num:
-				logging.debug(f"合并深度数据未通过校验\t{instId}\t{checksum}!={check_num}")
-				try:
-					f_data = Books.dep_book(instId)
-					return books_handle(instId, [f_data], "全量查询")
-				except Exception:
-					# logging.exception("强刷深度数据失败")
+			if checksum != check_num or len(all_bids) < 20 or len(all_asks) < 20:
+				if time.time() > limit_ts:
+					# 限制接口调用频次
+					limit_ts = time.time() + 0.15
+					logging.debug(f"合并深度数据未通过校验\t{instId}\t{checksum}!={check_num}")
+					try:
+						f_data = Books.dep_book(instId)
+						return books_handle(instId, [f_data], "全量查询")
+					except Exception:
+						# logging.exception("强刷深度数据失败")
+						return
+				else:
+					logging.warning("过滤异常数据")
 					return
 			else:
 				logging.debug(f"成功合并深度数据\t{instId}")
 				update(ts, all_asks, all_bids)
+		else:
+			logging.debug(f"全量深度数据\t{instId}")
+			update(ts, incr_asks, incr_bids)
 	books = Books.books_data[instId]
 	is_swap = instId.endswith("-SWAP")
 	item = dict()
@@ -241,7 +251,28 @@ def books_handle(instId, datas, source_type="推送"):
 	item['time'] = HeaderUtils.get_timestamp(item_unix_ts, False)
 	item['local_time'] = HeaderUtils.get_timestamp(local_unix_ts, False)
 	local_ts_cache[local_ts_key] = (item_unix_ts, data)
+	item['bookId'] = ts
+	item['id'] = item['bookId']
 	if instId == Currency.BTCUSDT:
-		mkt.spot_tick_line.append(item)
+		line_append(mkt.spot_tick_line, item)
 	elif instId == Currency.BTCUSDT_SWAP:
-		mkt.swap_tick_line.append(item)
+		line_append(mkt.swap_tick_line, item)
+
+
+def line_append(lines: list, item, sort_key="id"):
+	if len(lines) > 0:
+		if item['timestamp'] > lines[-1]['timestamp']:
+			lines.append(item)
+		elif sort_key in item:
+			iid = item[sort_key]
+			lid = lines[-1][sort_key]
+			if iid > lid:
+				lines.append(item)
+			elif iid == lid:
+				pass
+			else:
+				raise Exception()
+		else:
+			raise Exception()
+	else:
+		lines.append(item)

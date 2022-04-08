@@ -10,17 +10,13 @@ CtVals: Dict[str, float] = dict()
 
 
 def ctVal(instType: str, instId: str) -> float:
-    if instId in CtVals:
-        return CtVals[instId]
-    else:
-        instId_ctVal = float(OkexRest.instruments(instType, instId)['data'][0]['ctVal'])
-        CtVals[instId] = instId_ctVal
-        return instId_ctVal
+	if instId in CtVals:
+		return CtVals[instId]
+	else:
+		instId_ctVal = float(OkexRest.instruments(instType, instId)['data'][0]['ctVal'])
+		CtVals[instId] = instId_ctVal
+		return instId_ctVal
 
 
 if __name__ == '__main__':
-    print(ctVal("SWAP", constants.Currency.BTCUSDT_SWAP))
-
-
-
-
+	print(ctVal("SWAP", constants.Currency.BTCUSDT_SWAP))

@@ -95,33 +95,33 @@ if __name__ == "__main__":
 	value = Checkaccount()
 	print(value)
 
-	# 下单/撤单
-	# fake = Faker("zh-CN")
-	# random_order_id = fake.pystr(min_chars=1, max_chars=32)
-	# print("下单", Orders.order(instId=constants.Currency.BTCUSDT,
-	#                          tdMode="cross", side="buy",
-	#                          ordType="ioc", sz="0.0001", px="54800"))
+# 下单/撤单
+# fake = Faker("zh-CN")
+# random_order_id = fake.pystr(min_chars=1, max_chars=32)
+# print("下单", Orders.order(instId=constants.Currency.BTCUSDT,
+#                          tdMode="cross", side="buy",
+#                          ordType="ioc", sz="0.0001", px="54800"))
 
-	# orders = [
-	#     {
-	#         'symbol': constants.Currency.BTCUSDT, #币对
-	#         'price': 61000,    #单价
-	#         'amount': 0.0001,  # 数量
-	#         'type': 'post_only',  # 下单类型
-	#         'side': 'buy',  # 买还是卖
-	#     }
-	# ]
-	# id = Placeorder(orders=orders)
-	# print(id)
+# orders = [
+#     {
+#         'symbol': constants.Currency.BTCUSDT, #币对
+#         'price': 61000,    #单价
+#         'amount': 0.0001,  # 数量
+#         'type': 'post_only',  # 下单类型
+#         'side': 'buy',  # 买还是卖
+#     }
+# ]
+# id = Placeorder(orders=orders)
+# print(id)
 
-	# time.sleep(3)
-	# #print("撤单", Orders.cancel_order(instId=constants.Currency.BTCUSDT, clOrdId=random_order_id))
-	# result=Orders.cancel_order(instId=constants.Currency.BTCUSDT,ordId=id)
-	# print(result)
+# time.sleep(3)
+# #print("撤单", Orders.cancel_order(instId=constants.Currency.BTCUSDT, clOrdId=random_order_id))
+# result=Orders.cancel_order(instId=constants.Currency.BTCUSDT,ordId=id)
+# print(result)
 
-	# print("订单信息", Orders.order_info(instId=constants.Currency.BTCUSDT,ordId=id))
-	# 订单信息 {'code': '0', 'data': [{'accFillSz': '0', 'avgPx': '', 'cTime': '1634134423307', 'category': 'normal', 'ccy': '', 'clOrdId': '', 'fee': '0', 'feeCcy': 'BTC', 'fillPx': '', 'fillSz': '0', 'fillTime': '', 'instId': 'BTC-USDT', 'instType': 'SPOT', 'lever': '', 'ordId': '368521713528774656', 'ordType': 'post_only', 'pnl': '0', 'posSide': 'net', 'px': '54600', 'rebate': '0', 'rebateCcy': 'USDT', 'side': 'buy', 'slOrdPx': '', 'slTriggerPx': '', 'state': 'canceled', 'sz': '0.0001', 'tag': '', 'tdMode': 'cross', 'tgtCcy': '', 'tpOrdPx': '', 'tpTriggerPx': '', 'tradeId': '', 'uTime': '1634134426337'}], 'msg': ''}
-	# 订单信息 {'code': '0', 'data': [{'accFillSz': '0', 'avgPx': '', 'cTime': '1635818006768', 'category': 'normal', 'ccy': '', 'clOrdId': '', 'fee': '0', 'feeCcy': 'BTC', 'fillPx': '', 'fillSz': '0', 'fillTime': '', 'instId': 'BTC-USDT', 'instType': 'SPOT', 'lever': '', 'ordId': '375583174373580801', 'ordType': 'post_only', 'pnl': '0', 'posSide': 'net', 'px': '61000', 'rebate': '0', 'rebateCcy': 'USDT', 'side': 'buy', 'slOrdPx': '', 'slTriggerPx': '', 'state': 'live', 'sz': '0.0001', 'tag': '', 'tdMode': 'cross', 'tgtCcy': '', 'tpOrdPx': '', 'tpTriggerPx': '', 'tradeId': '', 'uTime': '1635818006768'}], 'msg': ''}
+# print("订单信息", Orders.order_info(instId=constants.Currency.BTCUSDT,ordId=id))
+# 订单信息 {'code': '0', 'data': [{'accFillSz': '0', 'avgPx': '', 'cTime': '1634134423307', 'category': 'normal', 'ccy': '', 'clOrdId': '', 'fee': '0', 'feeCcy': 'BTC', 'fillPx': '', 'fillSz': '0', 'fillTime': '', 'instId': 'BTC-USDT', 'instType': 'SPOT', 'lever': '', 'ordId': '368521713528774656', 'ordType': 'post_only', 'pnl': '0', 'posSide': 'net', 'px': '54600', 'rebate': '0', 'rebateCcy': 'USDT', 'side': 'buy', 'slOrdPx': '', 'slTriggerPx': '', 'state': 'canceled', 'sz': '0.0001', 'tag': '', 'tdMode': 'cross', 'tgtCcy': '', 'tpOrdPx': '', 'tpTriggerPx': '', 'tradeId': '', 'uTime': '1634134426337'}], 'msg': ''}
+# 订单信息 {'code': '0', 'data': [{'accFillSz': '0', 'avgPx': '', 'cTime': '1635818006768', 'category': 'normal', 'ccy': '', 'clOrdId': '', 'fee': '0', 'feeCcy': 'BTC', 'fillPx': '', 'fillSz': '0', 'fillTime': '', 'instId': 'BTC-USDT', 'instType': 'SPOT', 'lever': '', 'ordId': '375583174373580801', 'ordType': 'post_only', 'pnl': '0', 'posSide': 'net', 'px': '61000', 'rebate': '0', 'rebateCcy': 'USDT', 'side': 'buy', 'slOrdPx': '', 'slTriggerPx': '', 'state': 'live', 'sz': '0.0001', 'tag': '', 'tdMode': 'cross', 'tgtCcy': '', 'tpOrdPx': '', 'tpTriggerPx': '', 'tradeId': '', 'uTime': '1635818006768'}], 'msg': ''}
 
-	# if ws_thread:
-	#     ws_thread.join()
+# if ws_thread:
+#     ws_thread.join()
