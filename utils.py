@@ -14,7 +14,8 @@ apikey = "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f"
 secretkey = "d90e4114442e1fd107c1f240eef44bbf7ac0ce2eb0ce54078e270566145e3f54"
 passPhrase = ""
 
-api_baseurl = "https://testnet.binancefuture.com"
+# override_api_baseurl = "https://testnet.binancefuture.com"
+override_api_baseurl = "https://fapi.binance.com"
 
 
 def crc32(str):

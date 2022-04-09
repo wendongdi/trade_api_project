@@ -6,7 +6,7 @@ from binance.futures import Futures
 
 import utils
 
-client = Futures(key=utils.apikey, secret=utils.secretkey, base_url=utils.api_baseurl)
+client = Futures(key=utils.apikey, secret=utils.secretkey, base_url=utils.override_api_baseurl)
 
 
 # 账户余额

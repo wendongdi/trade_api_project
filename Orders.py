@@ -5,7 +5,7 @@ from binance.futures import Futures
 
 import utils
 
-client = Futures(key=utils.apikey, secret=utils.secretkey, base_url=utils.api_baseurl)
+client = Futures(key=utils.apikey, secret=utils.secretkey, base_url=utils.override_api_baseurl)
 
 
 def instMap(inst):
@@ -14,69 +14,35 @@ def instMap(inst):
 	return inst
 
 
-def order(instId: str, tdMode: str, side: str, ordType: str, sz: str, clOrdId: str = None, px: str = None,
-          posSide: str = None, ccy: str = None, tag: str = None, reduceOnly: bool = None, tgtCcy: str = None):
-	assert ccy is None and tag is None and tgtCcy is None
+def bianOrder(symbol, side, positionSide, type, reduceOnly=None, quantity=None, price=None,
+              newClientOrderId=None, stopPrice=None, closePosition=None, activationPrice=None,
+              callbackRate=None, timeInForce=None, workingType=None, priceProtect=None, newOrderRespType=None):
+	"""
+		币安下单接口：https://binance-docs.github.io/apidocs/futures/cn/#trade-3
 
-	if posSide:
-		if posSide == 'net': posSide = 'BOTH'
-		posSide = posSide.upper()
-
-	# todo ordType
-	ordType = ordType.upper()
-
-	bares = client.new_order(symbol=instMap(instId.upper())
-	                         , side=side.upper()
-	                         , positionSide=posSide
-	                         , type=ordType
-	                         , reduceOnly=str(reduceOnly).lower()
-	                         , quantity=float(sz)
-	                         , price=float(px)
-	                         , newClientOrderId=clOrdId
-	                         , stopPrice=None
-	                         , closePosition=None
-	                         , activationPrice=None
-	                         , callbackRate=None
-	                         , timeInForce=None
-	                         , workingType=None
-	                         , priceProtect=None
-	                         , newOrderRespType=None
+		symbol	STRING	YES	交易对
+		,side	ENUM	YES	买卖方向 SELL, BUY
+		,positionSide	ENUM	NO	持仓方向，单向持仓模式下非必填，默认且仅可填BOTH;在双向持仓模式下必填,且仅可选择 LONG 或 SHORT
+		,type	ENUM	YES	订单类型 LIMIT, MARKET, STOP, TAKE_PROFIT, STOP_MARKET, TAKE_PROFIT_MARKET, TRAILING_STOP_MARKET
+		,reduceOnly	STRING	NO	true, false; 非双开模式下默认false；双开模式下不接受此参数； 使用closePosition不支持此参数。
+		,quantity	DECIMAL	NO	下单数量,使用closePosition不支持此参数。
+		,price	DECIMAL	NO	委托价格
+		,newClientOrderId	STRING	NO	用户自定义的订单号，不可以重复出现在挂单中。如空缺系统会自动赋值。必须满足正则规则 ^[\.A-Z\:/a-z0-9_-]{1,36}$
+		,stopPrice	DECIMAL	NO	触发价, 仅 STOP, STOP_MARKET, TAKE_PROFIT, TAKE_PROFIT_MARKET 需要此参数
+		,closePosition	STRING	NO	true, false；触发后全部平仓，仅支持STOP_MARKET和TAKE_PROFIT_MARKET；不与quantity合用；自带只平仓效果，不与reduceOnly 合用
+		,activationPrice	DECIMAL	NO	追踪止损激活价格，仅TRAILING_STOP_MARKET 需要此参数, 默认为下单当前市场价格(支持不同workingType)
+		,callbackRate	DECIMAL	NO	追踪止损回调比例，可取值范围[0.1, 5],其中 1代表1% ,仅TRAILING_STOP_MARKET 需要此参数
+		,timeInForce	ENUM	NO	有效方法
+		,workingType	ENUM	NO	stopPrice 触发类型: MARK_PRICE(标记价格), CONTRACT_PRICE(合约最新价). 默认 CONTRACT_PRICE
+		,priceProtect	STRING	NO	条件单触发保护："TRUE","FALSE", 默认"FALSE". 仅 STOP, STOP_MARKET, TAKE_PROFIT, TAKE_PROFIT_MARKET 需要此参数
+		,newOrderRespType	ENUM	NO	"ACK", "RESULT", 默认 "ACK"
+	   """
+	bares = client.new_order(symbol, side, positionSide, type
+	                         , reduceOnly=reduceOnly, quantity=quantity, price=price, newClientOrderId=newClientOrderId
+	                         , stopPrice=stopPrice, closePosition=closePosition, activationPrice=activationPrice
+	                         , callbackRate=callbackRate, timeInForce=timeInForce, workingType=workingType
+	                         , priceProtect=priceProtect, newOrderRespType=newOrderRespType
 	                         )
-
-	"""
-	下单
-
-	https://www.okex.com/docs-v5/zh/?python#rest-api-trade-place-order
-	:param tdMode: 必填，交易模式
-						下单时需要指定
-						1) 简单交易模式：
-							- cash：币币和期权买方
-						2) 单币种保证金模式
-							- isolated：逐仓杠杆
-							- cross：全仓杠杆
-							- cash：全仓币币
-							- cross：全仓交割/永续/期权
-							- isolated：逐仓交割/永续/期权
-						3) 跨币种保证金模式
-							- isolated：逐仓杠杆
-							- cross：全仓币币
-							- cross：全仓交割/永续/期权
-							- isolated：逐仓交割/永续/期权
-						4) 组合保证金模式
-							- isolated：逐仓杠杆
-							- cross：全仓币币
-							- cross：全仓交割/永续/期权
-							- isolated：逐仓交割/永续/期权
-	:param ordType: 必填，订单类型，创建新订单时必须指定，您指定的订单类型将影响需要哪些订单参数和撮合系统如何执行您的订单，以下是有效的ordType：
-						1） 普通委托：
-							limit：限价单，要求指定sz 和 px
-							market：市价单，币币和币币杠杆，是市价委托吃单；交割合约和永续合约，是自动以最高买/最低卖价格委托，遵循限价机制；期权合约不支持市价委托
-						2） 高级委托：
-							post_only：限价委托，在下单那一刻只做maker，如果该笔订单的任何部分会吃掉当前挂单深度，则该订单将被全部撤销。
-							fok：限价委托，全部成交或立即取消，如果无法全部成交该笔订单，则该订单将被全部撤销。
-							ioc：限价委托，立即成交并取消剩余，立即按照委托价格撮合成交，并取消该订单剩余未完成数量，不会在深度列表上展示委托数量。
-							optimal_limit_ioc:市价委托，立即成交并取消剩余，仅适用于交割合约和永续合约。
-	"""
 
 	# print(json.dumps(bares, indent=4, ensure_ascii=False))
 	bares.update({
@@ -87,6 +53,36 @@ def order(instId: str, tdMode: str, side: str, ordType: str, sz: str, clOrdId: s
 		"sMsg":''
 	})
 	return bares
+
+
+def order(instId: str, tdMode: str, side: str, ordType: str, sz: str, clOrdId: str = None, px: str = None,
+          posSide: str = None, ccy: str = None, tag: str = None, reduceOnly: bool = None, tgtCcy: str = None):
+	symbol = instMap(instId.upper())
+	positionSide = posSide
+	if positionSide:
+		if positionSide == 'net': positionSide = 'BOTH'
+		positionSide = positionSide.upper()
+
+	# todo type & other parmas
+	type = ordType.upper()
+
+	return bianOrder(symbol=symbol
+	                 , side=side.upper()
+	                 , positionSide=positionSide
+	                 , type=type
+	                 , reduceOnly=str(reduceOnly).lower()
+	                 , quantity=float(sz)
+	                 , price=float(px)
+	                 , newClientOrderId=clOrdId
+	                 , stopPrice=None
+	                 , closePosition=None
+	                 , activationPrice=None
+	                 , callbackRate=None
+	                 , timeInForce=None
+	                 , workingType=None
+	                 , priceProtect=None
+	                 , newOrderRespType=None
+	                 )
 
 
 def cancel_order(instId, ordId=None, clOrdId=None):
