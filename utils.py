@@ -16,9 +16,13 @@ from binance.futures import Futures
 apikey = "apikey"
 secretkey = "secretkey"
 passPhrase = "passPhrase"
+
+
 # 配合测试apikey和secretkey，override_api_baseurl需要设置为 https://testnet.binancefuture.com
 # override_api_baseurl = "https://testnet.binancefuture.com"
-override_api_baseurl = "https://fapi.binance.com"
+def override_api_baseurl():
+	return "https://testnet.binancefuture.com" if apikey == "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f" else "https://fapi.binance.com"
+
 
 __fclient_instance = None
 __fclient_lock = threading.Lock()
@@ -30,7 +34,7 @@ def getFuturesClient():
 		__fclient_lock.acquire()
 		try:
 			if __fclient_instance is None:
-				__fclient_instance = Futures(key=apikey, secret=secretkey, base_url=override_api_baseurl)
+				__fclient_instance = Futures(key=apikey, secret=secretkey, base_url=override_api_baseurl())
 		finally:
 			__fclient_lock.release()
 	return __fclient_instance
