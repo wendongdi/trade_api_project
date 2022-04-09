@@ -6,6 +6,7 @@ import Accounts
 import OkexApp
 import Orders
 import handlers
+import utils
 
 
 class Market:
@@ -18,6 +19,11 @@ class Market:
 
 
 if __name__ == '__main__':
+	utils.apikey = "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f"
+	utils.secretkey = "d90e4114442e1fd107c1f240eef44bbf7ac0ce2eb0ce54078e270566145e3f54"
+	utils.passPhrase = ""
+	utils.override_api_baseurl = "https://testnet.binancefuture.com"
+
 	# 查询
 	print(Accounts.balance('usdt'))
 	print(Accounts.balance('btc'))

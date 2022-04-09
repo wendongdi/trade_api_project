@@ -2,16 +2,11 @@ f"""
 账号信息
 """
 
-from binance.futures import Futures
-
 import utils
-
-client = Futures(key=utils.apikey, secret=utils.secretkey, base_url=utils.override_api_baseurl)
-
 
 # 账户余额
 def balance(ccy=None):
-	bares = client.balance()
+	bares = utils.getFuturesClient().balance()
 
 	# print(json.dumps(bares, indent=4, ensure_ascii=False))
 	def funx(item):
@@ -23,14 +18,14 @@ def balance(ccy=None):
 
 # 账户配置
 def config():
-	bares = client.account()
+	bares = utils.getFuturesClient().account()
 	# print(json.dumps(bares, indent=4, ensure_ascii=False))
 	return bares
 
 
 # 账户最大可转余额
 def max_withdrawal(ccy=None):
-	bares = client.balance()
+	bares = utils.getFuturesClient().balance()
 
 	# print(json.dumps(bares, indent=4, ensure_ascii=False))
 	def funx(item):

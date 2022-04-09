@@ -5,18 +5,35 @@ import base64
 import datetime
 import hmac
 import json
+import threading
 from hmac import HMAC
 
 import time
 import zlib
-
 # 测试apikey和secretkey
-apikey = "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f"
-secretkey = "d90e4114442e1fd107c1f240eef44bbf7ac0ce2eb0ce54078e270566145e3f54"
-passPhrase = ""
+from binance.futures import Futures
+
+apikey = "apikey"
+secretkey = "secretkey"
+passPhrase = "passPhrase"
 # 配合测试apikey和secretkey，override_api_baseurl需要设置为 https://testnet.binancefuture.com
 # override_api_baseurl = "https://testnet.binancefuture.com"
 override_api_baseurl = "https://fapi.binance.com"
+
+__fclient_instance = None
+__fclient_lock = threading.Lock()
+
+
+def getFuturesClient():
+	global __fclient_instance
+	if __fclient_instance is None:
+		__fclient_lock.acquire()
+		try:
+			if __fclient_instance is None:
+				__fclient_instance = Futures(key=apikey, secret=secretkey, base_url=override_api_baseurl)
+		finally:
+			__fclient_lock.release()
+	return __fclient_instance
 
 
 def crc32(str):

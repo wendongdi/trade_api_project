@@ -1,11 +1,8 @@
 f"""
 订单信息
 """
-from binance.futures import Futures
 
 import utils
-
-client = Futures(key=utils.apikey, secret=utils.secretkey, base_url=utils.override_api_baseurl)
 
 
 def instMap(inst):
@@ -63,9 +60,9 @@ def bianOrder(symbol, side, type, positionSide=None, reduceOnly=None, quantity=N
 	if newOrderRespType: ex_params['newOrderRespType'] = newOrderRespType
 
 	if __test:
-		bares = client.new_order_test(symbol, side, type, **ex_params)
+		bares = utils.getFuturesClient().new_order_test(symbol, side, type, **ex_params)
 	else:
-		bares = client.new_order(symbol, side, type, **ex_params)
+		bares = utils.getFuturesClient().new_order(symbol, side, type, **ex_params)
 
 	# print(json.dumps(bares, indent=4, ensure_ascii=False))
 	bares.update({
@@ -95,8 +92,8 @@ def order(instId: str, tdMode: str, side: str, ordType: str, sz: str, clOrdId: s
 
 
 def cancel_order(instId, ordId=None, clOrdId=None):
-	bares = client.cancel_order(symbol=instMap(instId), orderId=ordId, origClientOrderId=clOrdId
-	                            )
+	bares = utils.getFuturesClient().cancel_order(symbol=instMap(instId), orderId=ordId, origClientOrderId=clOrdId
+	                                              )
 
 	bares.update({
 		"clOrdId":bares['clientOrderId'],
@@ -108,8 +105,8 @@ def cancel_order(instId, ordId=None, clOrdId=None):
 
 
 def order_info(instId, ordId=None, clOrdId=None):
-	bares = client.query_order(symbol=instMap(instId), orderId=ordId, origClientOrderId=clOrdId
-	                           )
+	bares = utils.getFuturesClient().query_order(symbol=instMap(instId), orderId=ordId, origClientOrderId=clOrdId
+	                                             )
 	bares.update({
 		"clOrdId":bares['clientOrderId'],
 		"ordId":bares['orderId'],
