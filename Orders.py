@@ -21,7 +21,15 @@ def bianOrder(symbol, side, type, positionSide=None, reduceOnly=None, quantity=N
 		:parameter __test  BOOL    NO  测试订单请求不会实际提交 \n
 		:parameter symbol	STRING	YES	交易对 \n
 		:parameter side	ENUM	YES	买卖方向 SELL, BUY  \n
-		:parameter type	ENUM	YES	订单类型 LIMIT, MARKET, STOP, TAKE_PROFIT, STOP_MARKET, TAKE_PROFIT_MARKET, TRAILING_STOP_MARKET    \n
+		:parameter type	ENUM	YES	订单类型
+												LIMIT 限价单
+												MARKET 市价单
+												STOP_LOSS 止损单
+												STOP_LOSS_LIMIT 限价止损单
+												TAKE_PROFIT 止盈单
+												TAKE_PROFIT_LIMIT 限价止盈单
+												LIMIT_MAKER 限价只挂单
+									LIMIT, MARKET, STOP, TAKE_PROFIT, STOP_MARKET, TAKE_PROFIT_MARKET, TRAILING_STOP_MARKET    \n
 									根据 order type的不同，某些参数强制要求，具体如下:    \n
 									Type	强制要求的参数    \n
 									LIMIT	timeInForce, quantity, price    \n
@@ -114,6 +122,22 @@ def order_info(instId, ordId=None, clOrdId=None):
 		"sMsg":''
 	})
 	return bares
+
+
+def change_position_mode(dualSidePosition: bool):
+	"""
+	更改持仓模式
+	:param dualSidePosition:"true": 双向持仓模式；"false": 单向持仓模式
+	:return:
+	"""
+	return utils.getFuturesClient().change_position_mode(dualSidePosition=str(dualSidePosition).lower())
+
+
+def get_position_mode(dualSidePosition: bool):
+	"""
+	查询持仓模式
+	"""
+	return utils.getFuturesClient().get_position_mode()
 
 
 if __name__ == '__main__':

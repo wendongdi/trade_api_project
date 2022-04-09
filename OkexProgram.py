@@ -19,8 +19,8 @@ class Market:
 
 
 if __name__ == '__main__':
-	utils.apikey = "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f"
-	utils.secretkey = "d90e4114442e1fd107c1f240eef44bbf7ac0ce2eb0ce54078e270566145e3f54"
+	utils.apikey = "LNzrE0QaPIsehXoEL7WaGROI5jL1BkwhUzQJpcewNfLsJIcthN8V7j5OEdQR4IZ9"
+	utils.secretkey = "FbsRW7e9nDgFrr1E1ZBSjrW7nG6I3qSd8nXcxCWXdNJ1tWNeo3tuoKNHEcvhoCyr"
 	utils.passPhrase = ""
 
 	# 查询
@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
 	# 下单
 	symbol = Orders.instMap("btc-usdt-swap".upper())
-	order_resp = Orders.bianOrder(__test=False, symbol=symbol, side="buy".upper(), type="MARKET", positionSide=None, quantity=1, newClientOrderId="testorderid123123")
+	order_resp = Orders.bianOrder(__test=False, symbol=symbol, side="sell".upper(), type="MARKET", positionSide=None, quantity=1, newClientOrderId="testorderid123123")
 	print(order_resp)
 	ordId = order_resp['ordId']
 	print(Orders.order_info(symbol, ordId=ordId))
