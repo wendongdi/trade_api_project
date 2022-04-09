@@ -1,6 +1,10 @@
 import threading
 
+import time
+
+import Accounts
 import OkexApp
+import Orders
 import handlers
 
 
@@ -14,6 +18,18 @@ class Market:
 
 
 if __name__ == '__main__':
+	# 查询
+	print(Accounts.balance('usdt'))
+	print(Accounts.balance('btc'))
+
+	# 下单
+	symbol = Orders.instMap("btc-usdt-swap".upper())
+	order_resp = Orders.bianOrder(__test=False, symbol=symbol, side="sell".upper(), type="MARKET", positionSide=None, quantity=1, newClientOrderId="testorderid123123")
+	print(order_resp)
+	ordId = order_resp['ordId']
+	print(Orders.order_info(symbol, ordId=ordId))
+
+	# 数据
 	mkt = Market()
 	# 监听行情
 	handlers.mkt = mkt
@@ -22,6 +38,16 @@ if __name__ == '__main__':
 	handlers.trade_lock = threading.Lock()
 	# 运行websocket
 	ws_thread = OkexApp.start()
+
+	while True:
+		print(
+			len(mkt.spot_trade_line),
+			len(mkt.spot_tick_line),
+			len(mkt.swap_trade_line),
+			len(mkt.swap_tick_line)
+		)
+		time.sleep(3)
+
 	if ws_thread:
 		try:
 			ws_thread.join()
