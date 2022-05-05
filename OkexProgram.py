@@ -6,7 +6,6 @@ import Accounts
 import OkexApp
 import Orders
 import handlers
-import utils
 
 
 class Market:
@@ -24,16 +23,17 @@ if __name__ == '__main__':
 	# utils.passPhrase = ""
 
 	# 查询
-	# print(Accounts.balance('usdt'))
-	# print(Accounts.balance('btc'))
+	print(Accounts.balance('usdt'))
+	print(Accounts.balance('btc'))
 
 	# 下单
-	# symbol = Orders.instMap("btc-usdt-swap".upper())
-	# order_resp = Orders.bianOrder(__test=False, symbol=symbol, side="sell".upper(), type="MARKET", positionSide=None, quantity=1, newClientOrderId="testorderid123123")
+	symbol = Orders.instMap("btc-usdt-swap".upper())
+	# order_resp = Orders.bianOrder(__test=True, symbol=symbol, side="sell".upper(), type="MARKET", positionSide=None, quantity=1, newClientOrderId="testorderid123123")
 	# print(order_resp)
 	# ordId = order_resp['ordId']
-	# print(Orders.order_info(symbol, ordId=ordId))
-
+	# oinfo = Orders.order_info(symbol, ordId=ordId, clOrdId="testorderid123123")
+	# print(oinfo)
+	OkexApp.Checkorder(symbol=symbol,ordId="3037768141")
 	# 数据
 	mkt = Market()
 	# 监听行情

@@ -13,10 +13,9 @@ import zlib
 # 测试apikey和secretkey
 from binance.futures import Futures
 
-apikey = "apikey"
-secretkey = "secretkey"
-passPhrase = "passPhrase"
-
+apikey = "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f"
+secretkey = "d90e4114442e1fd107c1f240eef44bbf7ac0ce2eb0ce54078e270566145e3f54"
+passPhrase = ""
 
 # 配合测试apikey和secretkey，override_api_baseurl需要设置为 https://testnet.binancefuture.com
 # override_api_baseurl = "https://testnet.binancefuture.com"
