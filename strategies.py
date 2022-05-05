@@ -1,5 +1,6 @@
 from ws4py.client.threadedclient import WebSocketClient
 
+import constants
 import handlers
 import utils
 from constants import Operation, Channel
@@ -22,7 +23,7 @@ ChannelHandlers = {
 	Channel.INSTRUMENTS:instruments_handle,
 	Channel.TICKERS:tick_handle_proxy,
 	Channel.TRADES:trade_handle_proxy,
-	Channel.BOOKS50:books_handle_proxy,
+	Channel.BOOKS:books_handle_proxy,
 }
 
 
@@ -70,7 +71,6 @@ class WsStrategy(object):
 
 
 class WsPublicStrategy(WsStrategy):
-	INST_IDS = [Currency.BTCUSDT, Currency.BTCUSDT_SWAP]
 	mkt = None
 
 	def __init__(self, URL: str = WS_PUBLIC_URL):
@@ -83,9 +83,9 @@ class WsPublicStrategy(WsStrategy):
 		channels = [
 			{"channel":Channel.INSTRUMENTS, "instType":"SWAP"},
 		]
-		for instId in WsPublicStrategy.INST_IDS:
+		for instId in constants.INST_IDS:
 			Books.init(instId)
-			channels.append({"channel":Channel.BOOKS50, "instId":instId})
+			channels.append({"channel":Channel.BOOKS, "instId":instId})
 			# channels.append({"channel": Channel.TICKERS, "instId": instId})
 			channels.append({"channel":Channel.TRADES, "instId":instId})
 

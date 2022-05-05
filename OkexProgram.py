@@ -19,20 +19,20 @@ class Market:
 
 
 if __name__ == '__main__':
-	utils.apikey = "LNzrE0QaPIsehXoEL7WaGROI5jL1BkwhUzQJpcewNfLsJIcthN8V7j5OEdQR4IZ9"
-	utils.secretkey = "FbsRW7e9nDgFrr1E1ZBSjrW7nG6I3qSd8nXcxCWXdNJ1tWNeo3tuoKNHEcvhoCyr"
-	utils.passPhrase = ""
+	# utils.apikey = "LNzrE0QaPIsehXoEL7WaGROI5jL1BkwhUzQJpcewNfLsJIcthN8V7j5OEdQR4IZ9"
+	# utils.secretkey = "FbsRW7e9nDgFrr1E1ZBSjrW7nG6I3qSd8nXcxCWXdNJ1tWNeo3tuoKNHEcvhoCyr"
+	# utils.passPhrase = ""
 
 	# 查询
-	print(Accounts.balance('usdt'))
-	print(Accounts.balance('btc'))
+	# print(Accounts.balance('usdt'))
+	# print(Accounts.balance('btc'))
 
 	# 下单
-	symbol = Orders.instMap("btc-usdt-swap".upper())
-	order_resp = Orders.bianOrder(__test=False, symbol=symbol, side="sell".upper(), type="MARKET", positionSide=None, quantity=1, newClientOrderId="testorderid123123")
-	print(order_resp)
-	ordId = order_resp['ordId']
-	print(Orders.order_info(symbol, ordId=ordId))
+	# symbol = Orders.instMap("btc-usdt-swap".upper())
+	# order_resp = Orders.bianOrder(__test=False, symbol=symbol, side="sell".upper(), type="MARKET", positionSide=None, quantity=1, newClientOrderId="testorderid123123")
+	# print(order_resp)
+	# ordId = order_resp['ordId']
+	# print(Orders.order_info(symbol, ordId=ordId))
 
 	# 数据
 	mkt = Market()
