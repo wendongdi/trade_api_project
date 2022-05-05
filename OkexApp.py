@@ -39,8 +39,8 @@ logging.root.addHandler(console_logger)
 
 def start():
 	# websocket注册币种
-	strategies.WsPublicStrategy.INST_IDS.append(constants.Currency.BTCUSDT)
-	strategies.WsPublicStrategy.INST_IDS.append(constants.Currency.BTCUSDT_SWAP)
+	constants.INST_IDS.append(constants.Currency.BTCUSDT)
+	constants.INST_IDS.append(constants.Currency.BTCUSDT_SWAP)
 	# 运行websocket
 	return OkexWs.run_ws_public(a_sync=True)
 

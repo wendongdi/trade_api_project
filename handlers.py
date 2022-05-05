@@ -3,6 +3,7 @@ f"""
 """
 import logging
 import threading
+
 import time
 
 import Books
@@ -168,8 +169,17 @@ def books_handle_proxy(instId: str, datas):
 
 limit_ts = 0
 
+single_booker = None
 
+
+# 增量推送不校验
 def books_handle(instId, datas, source_type="推送"):
+	# global single_booker
+	# if single_booker is None or not single_booker.is_alive():
+	# 	single_booker = threading.Thread(target=Books.book_downloader, args=(constants.INST_IDS))
+	# 	single_booker.start()
+	# 	time.sleep(0.2)
+
 	global limit_ts
 	change_count = 0
 
@@ -187,23 +197,25 @@ def books_handle(instId, datas, source_type="推送"):
 	else:
 		incr_asks = data['asks']
 		incr_bids = data['bids']
-		if 'checksum' in data:
+		# if 'checksum' in data:
+		if True:
 			if Books.tss[instId] <= 0 or len(Books.books_data[instId]['bids']) < 50 or len(Books.books_data[instId]['asks']) < 50:
 				Books.force_update(instId)
 				change_count += 1
 			source_type = "增量推送"
-			checksum = data['checksum']
+			# checksum = data['checksum']
 			all_bids, b_change_count = Books.update_bids(incr_bids, Books.books_data[instId]['bids']), 1
 			all_asks, a_change_count = Books.update_asks(incr_asks, Books.books_data[instId]['asks']), 1
 			change_count += (b_change_count + a_change_count)
 			if change_count <= 0:
 				return
-			check_num = Books.check(all_bids, all_asks)
-			if checksum != check_num or len(all_bids) < 20 or len(all_asks) < 20:
+			# check_num = Books.check(all_bids, all_asks)
+			# if checksum != check_num or len(all_bids) < 20 or len(all_asks) < 20:
+			if time.time() > limit_ts + 2 or len(all_bids) < 20 or len(all_asks) < 20:
 				if time.time() > limit_ts:
 					# 限制接口调用频次
 					limit_ts = time.time() + 0.15
-					logging.debug(f"合并深度数据未通过校验\t{instId}\t{checksum}!={check_num}")
+					# logging.debug(f"合并深度数据未通过校验\t{instId}\t{checksum}!={check_num}")
 					try:
 						f_data = Books.dep_book(instId)
 						return books_handle(instId, [f_data], "全量查询")
@@ -216,9 +228,9 @@ def books_handle(instId, datas, source_type="推送"):
 			else:
 				logging.debug(f"成功合并深度数据\t{instId}")
 				update(ts, all_asks, all_bids)
-		else:
-			logging.debug(f"全量深度数据\t{instId}")
-			update(ts, incr_asks, incr_bids)
+	# else:
+	# 	logging.debug(f"全量深度数据\t{instId}")
+	# 	update(ts, incr_asks, incr_bids)
 	books = Books.books_data[instId]
 	is_swap = instId.endswith("-SWAP")
 	item = dict()
