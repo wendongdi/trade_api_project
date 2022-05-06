@@ -2,7 +2,9 @@ f"""
 消息处理
 """
 import logging
+import operator
 import threading
+
 import time
 
 import Books
@@ -253,10 +255,28 @@ def books_handle(instId, datas, source_type="推送"):
 	local_ts_cache[local_ts_key] = (item_unix_ts, data)
 	item['bookId'] = ts
 	item['id'] = item['bookId']
-	if instId == Currency.BTCUSDT:
+	if instId == Currency.BTCUSDT and (not mkt.spot_tick_line or not_dup_check(mkt.spot_tick_line[-1], item)):
 		line_append(mkt.spot_tick_line, item)
-	elif instId == Currency.BTCUSDT_SWAP:
+	elif instId == Currency.BTCUSDT_SWAP and (not mkt.swap_tick_line or not_dup_check(mkt.swap_tick_line[-1], item)):
 		line_append(mkt.swap_tick_line, item)
+
+
+def not_dup_check(line0, last_0):
+	last = {**last_0}
+	del last['timestamp']
+	del last['local_timestamp']
+	del last['id']
+	del last['bookId']
+	del last['local_time']
+	del last['time']
+	line = {**line0}
+	del line['timestamp']
+	del line['local_timestamp']
+	del line['id']
+	del line['bookId']
+	del line['local_time']
+	del line['time']
+	return not operator.eq(line, last)
 
 
 def line_append(lines: list, item, sort_key="id"):
