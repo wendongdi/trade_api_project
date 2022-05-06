@@ -2,26 +2,26 @@ f"""
 OKEX应用
 """
 import logging
+
 import sys
 
 import Accounts
 import OkexWs
 import Orders
 import constants
-import strategies
 
 # API令牌信息
 # utils.apikey = "ff78e819-edbc-4d3b-833e-3a149f1c58e0"
 # utils.secretkey = "B06F19CB551BFBF17045143B1AC9E67F"
 # utils.passPhrase = "testPassphrase"
 
-# utils.apikey = '260705c5-a7b4-4c47-87d5-6982b9ac3370'
-# utils.secretkey = '0CEF5002C71E0DA7725EA71DAF89C4CE'
-# utils.passPhrase = 'Cm2355'
+# utils.apikey = "LNzrE0QaPIsehXoEL7WaGROI5jL1BkwhUzQJpcewNfLsJIcthN8V7j5OEdQR4IZ9"
+# utils.secretkey = "FbsRW7e9nDgFrr1E1ZBSjrW7nG6I3qSd8nXcxCWXdNJ1tWNeo3tuoKNHEcvhoCyr"
+# utils.passPhrase = 'CTA'
 
-# utils.apikey = "ea028e9c-3eb9-4ca8-a27e-e2b2db270609"
-# utils.secretkey = "B17D67D2E73F069B559DB82A053BCB27"
-# utils.passPhrase = 'Cm2355'
+# utils.apikey = "kcOXZAQRWIK01pQtHLqFtkRa92cUMYC86Xjx1hNH58zLSehi3ndVal6hNbMmN15u"
+# utils.secretkey = "nTnSRm1h87Qq1GKf8LfRiyE7HryXiFLaf4boX5T2voMoWx2QVwV8Ew2zxkO2qMVd"
+# utils.passPhrase = "Liam"
 
 
 # 命令行输出级别，日志输出级别
@@ -48,13 +48,17 @@ def start():
 # 检查账户USDT余额
 def Checkaccount(target_symbol):
 	balanceresult = Accounts.balance(target_symbol)
-	if len(balanceresult) != 0 and len(balanceresult[0]['details']) != 0:
-		needitem = Accounts.balance(target_symbol)[0]['details'][0]
-		# print(needitem)
-		usdtvalue = float(needitem['cashBal'])
-	else:
-		usdtvalue = 0
-	return usdtvalue
+	# print(balanceresult)
+	# if len(balanceresult) != 0 and len(balanceresult[0]['details']) != 0:
+	# 	needitem = Accounts.balance(target_symbol)[0]['details'][0]
+	# 	# print(needitem)
+	# 	usdtvalue = float(needitem['cashBal'])
+	# else:
+	# 	usdtvalue = 0
+
+	value = float(balanceresult[0]['balance'])
+
+	return value
 
 
 # 下单
@@ -69,16 +73,16 @@ def Placeorder(orders):
 
 
 # 检查订单成交情况
-def Checkorder(ordId, symbol):
-	result = Orders.order_info(instId=symbol, ordId=ordId)
+def Checkorder(ordId, encodesymbol):
+	result = Orders.order_info(instId=encodesymbol, ordId=ordId)
 	print(result)
-	fillsz = result["data"][0]["accFillSz"]
-	fillpx = result["data"][0]["avgPx"]
-	state = result["data"][0]["state"]
-	ordersz = result["data"][0]['sz']
-	orderpx = result["data"][0]['px']
-	side = result["data"][0]['side']
-	return fillsz, fillpx, state, ordersz, orderpx, side
+	fillsz = result['origQty']
+	fillpx = result['avgPrice']
+	state = result['status']
+	ordersz = result['origQty']
+	orderpx = result['avgPrice']
+	side = result['side']
+	return fillsz, fillpx, state, side
 
 
 def Cancelorder(ordId, symbol):
@@ -92,27 +96,19 @@ if __name__ == "__main__":
 	# 账户余额
 	# print("账户余额", Accounts.balance())
 	# print("账户余额", Accounts.balance("BTC"))
-	value = Checkaccount()
-	print(value)
+	# value = Checkaccount()
+	# print(value)
 
-# 下单/撤单
-# fake = Faker("zh-CN")
-# random_order_id = fake.pystr(min_chars=1, max_chars=32)
-# print("下单", Orders.order(instId=constants.Currency.BTCUSDT,
-#                          tdMode="cross", side="buy",
-#                          ordType="ioc", sz="0.0001", px="54800"))
+	# 下单/撤单
+	order_resp = Orders.bianOrder(__test=False, symbol=Orders.instMap('BTC-USDT-SWAP'), side='SELL', type="MARKET", quantity=0.01)
+	ordId = order_resp['ordId']
+	print(order_resp)
 
-# orders = [
-#     {
-#         'symbol': constants.Currency.BTCUSDT, #币对
-#         'price': 61000,    #单价
-#         'amount': 0.0001,  # 数量
-#         'type': 'post_only',  # 下单类型
-#         'side': 'buy',  # 买还是卖
-#     }
-# ]
-# id = Placeorder(orders=orders)
-# print(id)
+	# time.sleep(self.para_dic['waittime'])
+
+	# 检查订单状态
+	fillsz_str, fillpx_str, state_str, side_str = Checkorder(ordId=ordId, encodesymbol=Orders.instMap('BTC-USDT-SWAP'))
+	print(fillsz_str)
 
 # time.sleep(3)
 # #print("撤单", Orders.cancel_order(instId=constants.Currency.BTCUSDT, clOrdId=random_order_id))
