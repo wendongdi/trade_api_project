@@ -1,6 +1,7 @@
 f"""
 OKEX 实时接口工具
 """
+import logging
 
 import requests
 import urllib3
@@ -21,7 +22,7 @@ def request_get(request_path, params: dict = None):
 	response = requests.get(target_url, headers=headers, verify=False)
 	json = response.json()
 	if json['code'] != "0":
-		# logging.error(f"Rest接口调用异常：req:{target_url}\tresp:{json}\theaders:{headers}")
+		logging.debug(f"Rest接口调用异常：req:{target_url}\tresp:{json}\theaders:{headers}")
 		pass
 	return json
 

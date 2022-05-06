@@ -25,9 +25,8 @@ import strategies
 
 
 # 命令行输出级别，日志输出级别
-console_print_level = logging.INFO
-file_log_level = logging.WARN
-
+console_print_level = logging.DEBUG
+file_log_level = logging.DEBUG
 # 日志格式配置
 log_format = '%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s'
 logging.basicConfig(stream=sys.stdout, level=console_print_level, format=log_format)
@@ -87,13 +86,13 @@ def Cancelorder(ordId, symbol):
 
 
 if __name__ == "__main__":
-	ws_thread = start()
+	# ws_thread = start()
 
 	# 账户余额
-	# print("账户余额", Accounts.balance())
-	# print("账户余额", Accounts.balance("BTC"))
-	value = Checkaccount()
-	print(value)
+	print("账户余额", Accounts.balance())
+	print("账户余额", Accounts.balance("BTC"))
+	# value = Checkaccount()
+	# print(value)
 
 # 下单/撤单
 # fake = Faker("zh-CN")
