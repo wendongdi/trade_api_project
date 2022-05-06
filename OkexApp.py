@@ -9,15 +9,16 @@ import Accounts
 import OkexWs
 import Orders
 import constants
+import utils
 
 # API令牌信息
 # utils.apikey = "ff78e819-edbc-4d3b-833e-3a149f1c58e0"
 # utils.secretkey = "B06F19CB551BFBF17045143B1AC9E67F"
 # utils.passPhrase = "testPassphrase"
 
-# utils.apikey = "LNzrE0QaPIsehXoEL7WaGROI5jL1BkwhUzQJpcewNfLsJIcthN8V7j5OEdQR4IZ9"
-# utils.secretkey = "FbsRW7e9nDgFrr1E1ZBSjrW7nG6I3qSd8nXcxCWXdNJ1tWNeo3tuoKNHEcvhoCyr"
-# utils.passPhrase = 'CTA'
+utils.apikey = "LNzrE0QaPIsehXoEL7WaGROI5jL1BkwhUzQJpcewNfLsJIcthN8V7j5OEdQR4IZ9"
+utils.secretkey = "FbsRW7e9nDgFrr1E1ZBSjrW7nG6I3qSd8nXcxCWXdNJ1tWNeo3tuoKNHEcvhoCyr"
+utils.passPhrase = 'CTA'
 
 # utils.apikey = "kcOXZAQRWIK01pQtHLqFtkRa92cUMYC86Xjx1hNH58zLSehi3ndVal6hNbMmN15u"
 # utils.secretkey = "nTnSRm1h87Qq1GKf8LfRiyE7HryXiFLaf4boX5T2voMoWx2QVwV8Ew2zxkO2qMVd"
