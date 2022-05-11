@@ -61,8 +61,11 @@ def positions(instType="SWAP", encodesymbol=None):
 	"""
 
 	bares = utils.getFuturesClient().account()["positions"]
+	_encodesymbol = None
+	if _encodesymbol is not None:
+		_encodesymbol = encodesymbol.upper().split(",")
 	def funx(item):
-		return float(item['positionAmt']) > 0 and (encodesymbol is None or item['symbol'] in encodesymbol.upper())
+		return float(item['positionAmt']) > 0 and (_encodesymbol is None or item['symbol'] in _encodesymbol)
 
 	def funmap(item):
 		return item
