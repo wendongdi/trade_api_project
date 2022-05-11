@@ -96,7 +96,7 @@ if __name__ == "__main__":
 	# print("账户余额", Accounts.balance("USDT"))
 	# value = Checkaccount("USDT")
 	# print(value)
-	symbol = Orders.instMap("btc-usdt-swap".upper())
+	symbol = Orders.instMap(constants.Currency.BTCUSDT_SWAP)
 	print("持仓信息", Accounts.positions(encodesymbol=symbol))
 	exit(0)
 

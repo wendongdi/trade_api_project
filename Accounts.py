@@ -40,7 +40,7 @@ def max_withdrawal(ccy=None):
 def positions(instType="SWAP", encodesymbol=None):
 	"""
 	:param instType:    固定为 SWAP
-	:param encodesymbol:  多个交易对,用,隔开
+	:param encodesymbol:  筛选指定的交易对；多个交易对用,隔开
 	:return:
 			symbol  交易对
             initialMargin   当前所需起始保证金(基于最新标记价格)
