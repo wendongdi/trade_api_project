@@ -30,13 +30,13 @@ def positions(instType=None, instId=None, posId=None):
 	:return:
 				instType	String	产品类型
 				mgnMode	String	保证金模式
-				cross：全仓
-				isolated：逐仓
+								cross：全仓
+								isolated：逐仓
 				posId	String	持仓ID
 				posSide	String	持仓方向
-				long：双向持仓多头
-				short：双向持仓空头
-				net：单向持仓（交割/永续/期权：pos为正代表多头，pos为负代表空头。币币杠杆：posCcy为交易货币时，代表多头；posCcy为计价货币时，代表空头。）
+								long：双向持仓多头
+								short：双向持仓空头
+								net：单向持仓（交割/永续/期权：pos为正代表多头，pos为负代表空头。币币杠杆：posCcy为交易货币时，代表多头；posCcy为计价货币时，代表空头。）
 				pos	String	持仓数量，逐仓自主划转模式下，转入保证金后会产生pos为0的仓位
 				baseBal	String	交易币余额，适用于 币币杠杆（逐仓自主划转模式）
 				quoteBal	String	计价币余额 ，适用于 币币杠杆（逐仓自主划转模式）
@@ -48,7 +48,7 @@ def positions(instType=None, instId=None, posId=None):
 				instId	String	产品ID，如 BTC-USD-180216
 				lever	String	杠杆倍数，不适用于期权
 				liqPx	String	预估强平价
-				不适用于期权
+								不适用于期权
 				markPx	String	标记价格
 				imr	String	初始保证金，仅适用于全仓
 				margin	String	保证金余额，可增减，仅适用于逐仓
@@ -61,7 +61,7 @@ def positions(instType=None, instId=None, posId=None):
 				optVal	String	期权市值，仅适用于期权
 				notionalUsd	String	以美金价值为单位的持仓数量
 				adl	String	信号区
-				分为5档，从1到5，数字越小代表adl强度越弱
+							分为5档，从1到5，数字越小代表adl强度越弱
 				ccy	String	占用保证金的币种
 				last	String	最新成交价
 				usdPx	String	美金价格
