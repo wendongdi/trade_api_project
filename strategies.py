@@ -17,12 +17,12 @@ def test_mode():
 	return utils.apikey in moni_apikeys
 
 
-HTTP_URL = "https://www.okx.com"
+HTTP_URL = "https://www.okex.com"
 
-# WS_PRIVATE_URL: str = "wss://ws.okex.com:8443/ws/v5/private"
-WS_PRIVATE_URL: str = "wss://ws.okx.com:8443/ws/v5/private"
-# WS_PUBLIC_URL: str = "wss://ws.okex.com:8443/ws/v5/public"
-WS_PUBLIC_URL: str = "wss://ws.okx.com:8443/ws/v5/public"
+WS_PRIVATE_URL: str = "wss://ws.okex.com:8443/ws/v5/private"
+# WS_PRIVATE_URL: str = "wss://ws.okx.com:8443/ws/v5/private"
+WS_PUBLIC_URL: str = "wss://ws.okex.com:8443/ws/v5/public"
+# WS_PUBLIC_URL: str = "wss://ws.okx.com:8443/ws/v5/public"
 
 EventHandlers = {
 	Operation.SUBSCRIBE:subscribe_handle,
