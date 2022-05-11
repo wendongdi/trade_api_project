@@ -13,14 +13,28 @@ import zlib
 # 测试apikey和secretkey
 from binance.futures import Futures
 
-apikey = "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f"
-secretkey = "d90e4114442e1fd107c1f240eef44bbf7ac0ce2eb0ce54078e270566145e3f54"
+moni_apikeys = [
+	"03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f",
+	"bdf6b1bd099300e403a243e7868b9dd8aa23e76a520f0c9c1f2e6b61a4ed1375"
+]
+
+# apikey = "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f"
+# secretkey = "d90e4114442e1fd107c1f240eef44bbf7ac0ce2eb0ce54078e270566145e3f54"
+# passPhrase = ""
+
+apikey = "bdf6b1bd099300e403a243e7868b9dd8aa23e76a520f0c9c1f2e6b61a4ed1375"
+secretkey = "572746870b7fef25c44fbf80e58c06c55a465fc4a3edd5053abd307e942037df"
 passPhrase = ""
+
+
+def test_mode():
+	return apikey in moni_apikeys
+
 
 # 配合测试apikey和secretkey，override_api_baseurl需要设置为 https://testnet.binancefuture.com
 # override_api_baseurl = "https://testnet.binancefuture.com"
 def override_api_baseurl():
-	return "https://testnet.binancefuture.com" if apikey == "03af8586271056d2ed61276ec8a96be111a367bec48891a45a4ba3fce280549f" else "https://fapi.binance.com"
+	return "https://testnet.binancefuture.com" if test_mode() else "https://fapi.binance.com"
 
 
 __fclient_instance = None
