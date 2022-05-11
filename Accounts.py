@@ -37,11 +37,10 @@ def max_withdrawal(ccy=None):
 
 
 # 查看持仓信息
-def positions(instType="SWAP", instId=None, posId=None):
+def positions(instType="SWAP", encodesymbol=None):
 	"""
-	:param instType:
-	:param instId:
-	:param posId:
+	:param instType:    固定为 SWAP
+	:param encodesymbol:  多个交易对,用,隔开
 	:return:
 			symbol  交易对
             initialMargin   当前所需起始保证金(基于最新标记价格)
@@ -63,7 +62,7 @@ def positions(instType="SWAP", instId=None, posId=None):
 
 	bares = utils.getFuturesClient().account()["positions"]
 	def funx(item):
-		return float(item['positionAmt']) > 0 and (instId is None or item['symbol'] in instId.upper())
+		return float(item['positionAmt']) > 0 and (encodesymbol is None or item['symbol'] in encodesymbol.upper())
 
 	def funmap(item):
 		return item
