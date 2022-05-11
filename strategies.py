@@ -10,9 +10,19 @@ f"""
 配合{handlers}自定义逻辑
 """
 
-HTTP_URL: str = "https://www.okex.com"
-WS_PRIVATE_URL: str = "wss://ws.okex.com:8443/ws/v5/private"
-WS_PUBLIC_URL: str = "wss://ws.okex.com:8443/ws/v5/public"
+moni_apikeys = ["37e05ab9-f324-4610-994b-5311f885c113"]
+
+
+def test_mode():
+	return utils.apikey in moni_apikeys
+
+
+HTTP_URL = "https://www.okx.com"
+
+# WS_PRIVATE_URL: str = "wss://ws.okex.com:8443/ws/v5/private"
+WS_PRIVATE_URL: str = "wss://ws.okx.com:8443/ws/v5/private"
+# WS_PUBLIC_URL: str = "wss://ws.okex.com:8443/ws/v5/public"
+WS_PUBLIC_URL: str = "wss://ws.okx.com:8443/ws/v5/public"
 
 EventHandlers = {
 	Operation.SUBSCRIBE:subscribe_handle,
@@ -91,3 +101,5 @@ class WsPublicStrategy(WsStrategy):
 			channels.append({"channel":Channel.TRADES, "instId":instId})
 
 		self.agent.send(utils.gen_send_msg("subscribe", *channels))
+
+# todo proxy https://gist.github.com/hoozecn/6640b705ba709ee28382a9fee784ff26

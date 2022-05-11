@@ -18,7 +18,7 @@ def request_get(request_path, params: dict = None):
 		params_url = "&".join([k + "=" + v for k, v in params.items()])
 		request_path = request_path + "?" + params_url
 	target_url = strategies.HTTP_URL + request_path
-	headers = utils.HEADER.get_rest_header(request_path=request_path)
+	headers = utils.HEADER.get_rest_header(request_path=request_path, test_mode=strategies.test_mode())
 	response = requests.get(target_url, headers=headers, verify=False)
 	json = response.json()
 	if json['code'] != "0":
@@ -29,7 +29,7 @@ def request_get(request_path, params: dict = None):
 
 def request_post(request_path, params: dict = None):
 	target_url = strategies.HTTP_URL + request_path
-	headers = utils.HEADER.get_rest_header(request_path=request_path, method="POST", params=params)
+	headers = utils.HEADER.get_rest_header(request_path=request_path, method="POST", params=params, test_mode=strategies.test_mode())
 	response = requests.post(target_url, json=params, headers=headers, verify=False)
 	json = response.json()
 	if json['code'] != "0":
