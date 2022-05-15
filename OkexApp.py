@@ -4,12 +4,13 @@ OKEX应用
 import logging
 
 import sys
+import time
 
 import Accounts
 import OkexWs
 import Orders
 import constants
-
+from handlers import mkt
 
 # API令牌信息
 # utils.apikey = "ff78e819-edbc-4d3b-833e-3a149f1c58e0"
@@ -19,18 +20,29 @@ import constants
 # utils.apikey = "LNzrE0QaPIsehXoEL7WaGROI5jL1BkwhUzQJpcewNfLsJIcthN8V7j5OEdQR4IZ9"
 # utils.secretkey = "FbsRW7e9nDgFrr1E1ZBSjrW7nG6I3qSd8nXcxCWXdNJ1tWNeo3tuoKNHEcvhoCyr"
 # utils.passPhrase = 'CTA'
-
 # utils.apikey = "kcOXZAQRWIK01pQtHLqFtkRa92cUMYC86Xjx1hNH58zLSehi3ndVal6hNbMmN15u"
 # utils.secretkey = "nTnSRm1h87Qq1GKf8LfRiyE7HryXiFLaf4boX5T2voMoWx2QVwV8Ew2zxkO2qMVd"
 # utils.passPhrase = "Liam"
 
+mkt_chg = [time.time(), 0, 0, 0, 0]
+def out_stop_hook():
+	if mkt is None: return False
+	global mkt_chg
+	now_lens = [time.time(),
+	            len(mkt.swap_tick_line),
+	            len(mkt.spot_tick_line),
+	            len(mkt.swap_trade_line),
+	            len(mkt.spot_trade_line)]
+	if now_lens[1] != mkt_chg[1] or now_lens[2] != mkt_chg[2] or now_lens[3] != mkt_chg[3] or now_lens[4] != mkt_chg[4]:
+		mkt_chg = now_lens
+	return mkt_chg[0] + 300 < time.time()
 
 def start():
 	# websocket注册币种
 	constants.INST_IDS.append(constants.Currency.BTCUSDT)
 	constants.INST_IDS.append(constants.Currency.BTCUSDT_SWAP)
 	# 运行websocket
-	return OkexWs.run_ws_public(a_sync=True)
+	return OkexWs.run_ws_public(a_sync=True, stop_hook=out_stop_hook)
 
 
 # 检查账户USDT余额
