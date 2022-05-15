@@ -20,6 +20,7 @@ class OKExRunner(WebSocketClient):
 	def __init__(
 			self,
 			ws_strategy: WsStrategy,
+			stop_hook,
 			protocols=None,
 			extensions=None,
 			heartbeat_freq=None,
@@ -37,6 +38,7 @@ class OKExRunner(WebSocketClient):
 			exclude_headers,
 		)
 		ws_strategy.set_websocket(self)
+		self.stop_hook = stop_hook
 		self.strategy = ws_strategy
 		self.to_reroot = False
 
@@ -82,6 +84,9 @@ class OKExRunner(WebSocketClient):
 	def send_heart_beat(self):
 		ping = 'ping' or '{"event":"ping"}'
 		while not self.to_reroot:
+			if self.stop_hook():
+				self.close(reason='stop hook')
+				continue
 			time.sleep(5)  # 每隔5秒交易所服务器发送心跳信息
 			sent = False
 			while sent is False:  # 如果发送心跳包时出现错误，则再次发送直到发送成功为止
@@ -90,12 +95,16 @@ class OKExRunner(WebSocketClient):
 				logging.debug("Ping sent.")
 
 
-def run_ws_public(a_sync=False):
+def default_stop_hook():
+	return False
+
+
+def run_ws_public(a_sync=False, stop_hook=default_stop_hook):
 	pc_ws = None
 	try:
 		def run_forever():
 			while True:
-				pc_ws = OKExRunner(WsPublicStrategy())
+				pc_ws = OKExRunner(WsPublicStrategy(), stop_hook)
 				pc_ws.connect()
 
 				pc_ws.run_forever()

@@ -34,36 +34,53 @@ if __name__ == '__main__':
 	# OkexApp.Checkorder(encodesymbol=symbol,ordId="3037768141")
 	# 数据
 	mkt = Market()
+	# mkt2 = Market()
 	# 监听行情
 	handlers.mkt = mkt
 	# 同步锁
 	handlers.books_lock = threading.Lock()
 	handlers.trade_lock = threading.Lock()
 	# 运行websocket
-	ws_thread = OkexApp.start()
+
+	mkt_chg = [time.time(), 0, 0, 0, 0]
+	def out_stop_hook():
+		global mkt_chg
+		now_lens = [time.time(),
+		            len(mkt.swap_tick_line),
+		            len(mkt.spot_tick_line),
+		            len(mkt.swap_trade_line),
+		            len(mkt.spot_trade_line)]
+
+		if now_lens[1] != mkt_chg[1] or now_lens[2] != mkt_chg[2] or now_lens[3] != mkt_chg[3] or now_lens[4] != mkt_chg[4]:
+			mkt_chg = now_lens
+		return mkt_chg[0] + 300 < time.time()
+
+	ws_thread = OkexApp.start(out_stop_hook)
 
 	time.sleep(5)
 
 	lindx = 0
 
 	while True:
-		if len(mkt.swap_tick_line) - 1 > lindx:
-			lindx = len(mkt.swap_tick_line) - 1
-			print(mkt.swap_tick_line[lindx])
-		continue
-		for lines in [mkt.spot_tick_line, mkt.swap_tick_line]:
-
-			if len(lines) < 2: continue
-
-			indx = len(lines) - 1
-			last_0, lines_0 = lines[indx], lines[:indx]
-			dups = []
-			for line_0 in lines_0:
-				if not handlers.not_dup_check(line_0, last_0):
-					dups.append(line_0)
-			for dup in dups:
-				dup_secs = (float(last_0['timestamp']) - float(dup['timestamp'])) / 1000.0
-				print(dup_secs, last_0, dup)
+		print(len(handlers.mkt.swap_tick_line), len(handlers.mkt.swap_trade_line), len(handlers.mkt.spot_tick_line), len(handlers.mkt.spot_trade_line))
+		time.sleep(5)
+	# if len(mkt.swap_tick_line) - 1 > lindx:
+	# 	lindx = len(mkt.swap_tick_line) - 1
+	# 	print(mkt.swap_tick_line[lindx])
+	# continue
+	# for lines in [mkt.spot_tick_line, mkt.swap_tick_line]:
+	#
+	# 	if len(lines) < 2: continue
+	#
+	# 	indx = len(lines) - 1
+	# 	last_0, lines_0 = lines[indx], lines[:indx]
+	# 	dups = []
+	# 	for line_0 in lines_0:
+	# 		if not handlers.not_dup_check(line_0, last_0):
+	# 			dups.append(line_0)
+	# 	for dup in dups:
+	# 		dup_secs = (float(last_0['timestamp']) - float(dup['timestamp'])) / 1000.0
+	# 		print(dup_secs, last_0, dup)
 
 	#
 	# while True:

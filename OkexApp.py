@@ -25,12 +25,12 @@ import constants
 # utils.passPhrase = "Liam"
 
 
-def start():
+def start(out_stop_hook):
 	# websocket注册币种
 	constants.INST_IDS.append(constants.Currency.BTCUSDT)
 	constants.INST_IDS.append(constants.Currency.BTCUSDT_SWAP)
 	# 运行websocket
-	return OkexWs.run_ws_public(a_sync=True)
+	return OkexWs.run_ws_public(a_sync=True, stop_hook=out_stop_hook)
 
 
 # 检查账户USDT余额
