@@ -37,7 +37,7 @@ def out_stop_hook():
 		mkt_chg = now_lens
 	return mkt_chg[0] + 300 < time.time()
 
-def start():
+def start(out_stop_hook):
 	# websocket注册币种
 	constants.INST_IDS.append(constants.Currency.BTCUSDT)
 	constants.INST_IDS.append(constants.Currency.BTCUSDT_SWAP)
