@@ -1,4 +1,5 @@
 import threading
+import time
 
 import OkexApp
 import handlers
@@ -21,6 +22,7 @@ if __name__ == '__main__':
 	handlers.books_lock = threading.Lock()
 	handlers.trade_lock = threading.Lock()
 	# 运行websocket
+
 	ws_thread = OkexApp.start()
 	if ws_thread:
 		try:

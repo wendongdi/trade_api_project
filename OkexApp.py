@@ -10,6 +10,20 @@ import Accounts
 import OkexWs
 import Orders
 import constants
+from handlers import mkt
+
+mkt_chg = [time.time(), 0, 0, 0, 0]
+def out_stop_hook():
+	if mkt is None: return False
+	global mkt_chg
+	now_lens = [time.time(),
+	            len(mkt.swap_tick_line),
+	            len(mkt.spot_tick_line),
+	            len(mkt.swap_trade_line),
+	            len(mkt.spot_trade_line)]
+	if now_lens[1] != mkt_chg[1] or now_lens[2] != mkt_chg[2] or now_lens[3] != mkt_chg[3] or now_lens[4] != mkt_chg[4]:
+		mkt_chg = now_lens
+	return mkt_chg[0] + 300 < time.time()
 
 
 def start():
@@ -17,7 +31,7 @@ def start():
 	constants.INST_IDS.append(constants.Currency.BTCUSDT)
 	constants.INST_IDS.append(constants.Currency.BTCUSDT_SWAP)
 	# 运行websocket
-	return OkexWs.run_ws_public(a_sync=True)
+	return OkexWs.run_ws_public(a_sync=True, stop_hook=out_stop_hook)
 
 
 # 检查账户USDT余额
@@ -72,7 +86,6 @@ console_logger.setLevel(file_log_level)
 console_logger.setFormatter(logging.Formatter(log_format))
 logging.root.addHandler(console_logger)
 if __name__ == "__main__":
-
 	# 账户余额
 	print("持仓信息", Accounts.positions())
 	# print("账户余额", Accounts.balance())
@@ -95,11 +108,11 @@ if __name__ == "__main__":
 	#
 	# time.sleep(3)
 	# print("撤单", Orders.cancel_order(instId=constants.Currency.BTCUSDT, clOrdId=random_order_id))
-	id="444472716903718912"
+	id = "444472716903718912"
 	print("订单信息", Orders.order_info(instId=constants.Currency.BTCUSDT, ordId=id))
-	# result = Orders.cancel_order(instId=constants.Currency.BTCUSDT, ordId=id)
-	# print("撤单", result)
-	# print("持仓信息", Accounts.positions())
+# result = Orders.cancel_order(instId=constants.Currency.BTCUSDT, ordId=id)
+# print("撤单", result)
+# print("持仓信息", Accounts.positions())
 
 # 订单信息 {'code': '0', 'data': [{'accFillSz': '0', 'avgPx': '', 'cTime': '1634134423307', 'category': 'normal', 'ccy': '', 'clOrdId': '', 'fee': '0', 'feeCcy': 'BTC', 'fillPx': '', 'fillSz': '0', 'fillTime': '', 'instId': 'BTC-USDT', 'instType': 'SPOT', 'lever': '', 'ordId': '368521713528774656', 'ordType': 'post_only', 'pnl': '0', 'posSide': 'net', 'px': '54600', 'rebate': '0', 'rebateCcy': 'USDT', 'side': 'buy', 'slOrdPx': '', 'slTriggerPx': '', 'state': 'canceled', 'sz': '0.0001', 'tag': '', 'tdMode': 'cross', 'tgtCcy': '', 'tpOrdPx': '', 'tpTriggerPx': '', 'tradeId': '', 'uTime': '1634134426337'}], 'msg': ''}
 # 订单信息 {'code': '0', 'data': [{'accFillSz': '0', 'avgPx': '', 'cTime': '1635818006768', 'category': 'normal', 'ccy': '', 'clOrdId': '', 'fee': '0', 'feeCcy': 'BTC', 'fillPx': '', 'fillSz': '0', 'fillTime': '', 'instId': 'BTC-USDT', 'instType': 'SPOT', 'lever': '', 'ordId': '375583174373580801', 'ordType': 'post_only', 'pnl': '0', 'posSide': 'net', 'px': '61000', 'rebate': '0', 'rebateCcy': 'USDT', 'side': 'buy', 'slOrdPx': '', 'slTriggerPx': '', 'state': 'live', 'sz': '0.0001', 'tag': '', 'tdMode': 'cross', 'tgtCcy': '', 'tpOrdPx': '', 'tpTriggerPx': '', 'tradeId': '', 'uTime': '1635818006768'}], 'msg': ''}
