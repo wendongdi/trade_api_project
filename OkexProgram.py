@@ -1,3 +1,4 @@
+import random
 import threading
 
 import time
@@ -51,6 +52,13 @@ if __name__ == '__main__':
 	while True:
 		print(len(handlers.mkt.swap_tick_line), len(handlers.mkt.swap_trade_line), len(handlers.mkt.spot_tick_line), len(handlers.mkt.spot_trade_line))
 		time.sleep(5)
+
+		if random.randint(0, 2) < 1:
+			if handlers.trade_lock.locked():
+				handlers.trade_lock.release()
+			else:
+				handlers.trade_lock.acquire()
+
 	# if len(mkt.swap_tick_line) - 1 > lindx:
 	# 	lindx = len(mkt.swap_tick_line) - 1
 	# 	print(mkt.swap_tick_line[lindx])

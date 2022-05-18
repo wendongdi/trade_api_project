@@ -4,8 +4,8 @@ OKEX websocket工具
 import json
 import logging
 import threading
-import time
 
+import time
 from ws4py.client.threadedclient import WebSocketClient
 
 from strategies import WsStrategy, WsPublicStrategy
@@ -45,8 +45,11 @@ class OKExRunner(WebSocketClient):
 	def send(self, payload, binary=False):
 		try:
 			return super().send(payload, binary)
+		except AttributeError:
+			self.close(reason="websocket链接异常")
+			return
 		except Exception:
-			logging.exception("websocket链接异常")
+			logging.exception("websocket通信异常")
 
 	def run_forever(self):
 		threading.Thread(
@@ -61,11 +64,14 @@ class OKExRunner(WebSocketClient):
 		self.strategy.ws_opened()
 
 	def closed(self, code, reason=None):
-		self.strategy.ws_closed(code, reason)
+		logging.error(f"websocket closed {code} {reason.decode('utf8')}")
 		self.to_reroot = True
 
 	def unhandled_error(self, error):
 		logging.error(f"Failed to receive data\t{error}")
+		if error and "Errno 104" in str(error):
+			self.close(reason=f"对端连接已断开,{error}")
+			return
 
 	def close_connection(self):
 		super().close_connection()
@@ -103,15 +109,16 @@ def run_ws_public(a_sync=False, stop_hook=default_stop_hook):
 	pc_ws = None
 	try:
 		def run_forever():
+			cd = 1
 			while True:
+				logging.info(f"Okex-Ws 第{cd}次启动")
 				pc_ws = OKExRunner(WsPublicStrategy(), stop_hook)
 				pc_ws.connect()
-
 				pc_ws.run_forever()
-				print("pc_wd reboot...")
-				pc_ws.close_connection()
+				logging.error(f"Okex-Ws 第{cd}次中断")
+				cd += 1
 				pc_ws.close()
-				time.sleep(5)
+				time.sleep(60)
 
 		if a_sync:
 			thread = threading.Thread(

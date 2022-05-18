@@ -21,7 +21,7 @@ EventHandlers = {
 
 ChannelHandlers = {
 	Channel.INSTRUMENTS:instruments_handle,
-	Channel.TICKERS:tick_handle_proxy,
+	# Channel.TICKERS:tick_handle_proxy,
 	Channel.TRADES:trade_handle_proxy,
 	Channel.BOOKS50:books_handle_proxy,
 	Channel.BOOKS:books_handle_proxy,

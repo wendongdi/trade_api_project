@@ -2,6 +2,7 @@ f"""
 OKEX应用
 """
 import logging
+import random
 
 import sys
 import time
@@ -10,7 +11,7 @@ import Accounts
 import OkexWs
 import Orders
 import constants
-from handlers import mkt
+import handlers
 
 # API令牌信息
 # utils.apikey = "ff78e819-edbc-4d3b-833e-3a149f1c58e0"
@@ -25,17 +26,21 @@ from handlers import mkt
 # utils.passPhrase = "Liam"
 
 mkt_chg = [time.time(), 0, 0, 0, 0]
+
+
 def out_stop_hook():
-	if mkt is None: return False
+	if handlers.mkt is None: return False
 	global mkt_chg
 	now_lens = [time.time(),
-	            len(mkt.swap_tick_line),
-	            len(mkt.spot_tick_line),
-	            len(mkt.swap_trade_line),
-	            len(mkt.spot_trade_line)]
+	            len(handlers.mkt.swap_tick_line),
+	            len(handlers.mkt.spot_tick_line),
+	            len(handlers.mkt.swap_trade_line),
+	            len(handlers.mkt.spot_trade_line)]
 	if now_lens[1] != mkt_chg[1] or now_lens[2] != mkt_chg[2] or now_lens[3] != mkt_chg[3] or now_lens[4] != mkt_chg[4]:
 		mkt_chg = now_lens
+	if random.randint(0, 30) < 1: logging.warning(f"out_stop_hook now_lens {now_lens}")
 	return mkt_chg[0] + 300 < time.time()
+
 
 def start():
 	# websocket注册币种
@@ -91,14 +96,14 @@ def Cancelorder(ordId, symbol):
 
 
 # 命令行输出级别，日志输出级别
-console_print_level = logging.INFO
-file_log_level = logging.DEBUG
+handlers.console_print_level = logging.INFO
+handlers.file_log_level = logging.WARNING
 
 # 日志格式配置
 log_format = '%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s'
-logging.basicConfig(stream=sys.stdout, level=console_print_level, format=log_format)
-console_logger = logging.FileHandler(filename="OkexApp.log", mode="a", encoding="utf-8")
-console_logger.setLevel(file_log_level)
+logging.basicConfig(stream=sys.stdout, level=handlers.console_print_level, format=log_format)
+console_logger = logging.FileHandler(filename="OkexApp.log", mode="w", encoding="utf-8")
+console_logger.setLevel(handlers.file_log_level)
 console_logger.setFormatter(logging.Formatter(log_format))
 logging.root.addHandler(console_logger)
 

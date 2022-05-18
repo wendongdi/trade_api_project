@@ -3,6 +3,7 @@ f"""
 """
 import logging
 import operator
+import random
 import threading
 
 import time
@@ -11,6 +12,9 @@ import Books
 import Instruments
 from constants import Currency
 from utils import HeaderUtils
+
+console_print_level = logging.INFO
+file_log_level = logging.WARNING
 
 mkt = None
 books_lock: threading.Lock
@@ -23,11 +27,11 @@ def err_handle(json_msg):
 
 
 def common_handle(json_msg):
-	logging.info(f"通常响应消息\t{json_msg}")
+	logging.warning(f"通常响应消息\t{json_msg}")
 
 
 def data_common_handle(instId, datas):
-	logging.info(f"通常推送消息\t{instId, datas}")
+	logging.warning(f"通常推送消息\t{instId, datas}")
 
 
 def instruments_handle(ingore_1, datas):
@@ -43,70 +47,91 @@ def subscribe_handle(json_msg):
 	logging.info(f"订阅响应消息\t{json_msg}")
 
 
-def tick_handle_proxy(instId: str, datas):
-	tick_lock.acquire()
+# def tick_handle_proxy(instId: str, datas):
+# 	cd = 0
+# 	while tick_lock.locked():
+# 		if random.randint(0, 120) < 1: logging.warning(f"tick_handle_proxy[{cd}] 等待tick_lock")
+# 		cd += 1
+# 		time.sleep(0.1)
+# 	tick_lock.acquire()
+# 	try:
+# 		tick_handle(instId, datas)
+# 	finally:
+# 		tick_lock.release()
+
+
+def books_handle_proxy(instId: str, datas):
+	cd = 0
+	while books_lock.locked():
+		if random.randint(0, 120) < 1: logging.warning(f"books_handle_proxy[{cd}] 等待books_lock")
+		cd += 1
+		time.sleep(0.1)
+	books_lock.acquire()
 	try:
-		tick_handle(instId, datas)
+		books_handle(instId, datas)
 	finally:
-		tick_lock.release()
-
-
-def tick_handle(instId: str, datas):
-	"""
-	行情频道推送
-	:param instId: 产品ID
-	:param datas: 数据
-					instType 产品类型
-					instId 产品ID
-					last 最新成交价
-					lastSz 最新成交的数量
-					askPx 卖一价
-					askSz 卖一价对应的量
-					bidPx 买一价
-					bidSz 买一价对应的数量
-					vol24h 24小时成交量，以张为单位
-					volCcy24h 24小时成交量，以币为单位
-					open24h 24小时开盘价
-					high24h 24小时最高价
-					low24h 24小时最低价
-					sodUtc0 UTC 0 时开盘价
-					sodUtc8 UTC+8 时开盘价
-					ts 数据更新时间戳
-	:return:
-	"""
-	logging.debug(f"行情频道推送消息\t{instId}\t{datas}")
-	for data in datas:
-		assert data['instId'] == instId
-		is_swap = instId.endswith("-SWAP")
-		if is_swap:
-			ctVal = Instruments.ctVal("SWAP", instId)
-			data["lastSz"] = str(int(data["lastSz"]) * ctVal)
-			data["askSz"] = str(int(data["askSz"]) * ctVal)
-			data["bidSz"] = str(int(data["bidSz"]) * ctVal)
-		# todo 在此处理实时行情数据
-		item_unix_ts = int(data['ts'])
-		local_unix_ts = HeaderUtils.get_unix_timestamp_ns()
-		data['timestamp'] = item_unix_ts
-		data['exchange'] = 'okex'
-		data['asset_type'] = 'swap' if is_swap else 'spot'
-		data['symbol'] = instId
-		data['local_timestamp'] = local_unix_ts
-		data['time'] = HeaderUtils.get_timestamp(item_unix_ts, False)
-		data['local_time'] = HeaderUtils.get_timestamp(local_unix_ts, False)
-
-
-# if instId == Currency.BTCUSDT:
-#     Market.spot_tick_line.append(data)
-# elif instId == Currency.BTCUSDT_SWAP:
-#     Market.swap_tick_line.append(data)
+		books_lock.release()
 
 
 def trade_handle_proxy(instId: str, datas):
+	cd = 0
+	while trade_lock.locked():
+		if random.randint(0, 120) < 1: logging.warning(f"trade_handle_proxy[{cd}] 等待trade_lock")
+		cd += 1
+		time.sleep(0.1)
 	trade_lock.acquire()
 	try:
 		trade_handle(instId, datas)
 	finally:
 		trade_lock.release()
+
+
+# def tick_handle(instId: str, datas):
+# 	"""
+# 	行情频道推送
+# 	:param instId: 产品ID
+# 	:param datas: 数据
+# 					instType 产品类型
+# 					instId 产品ID
+# 					last 最新成交价
+# 					lastSz 最新成交的数量
+# 					askPx 卖一价
+# 					askSz 卖一价对应的量
+# 					bidPx 买一价
+# 					bidSz 买一价对应的数量
+# 					vol24h 24小时成交量，以张为单位
+# 					volCcy24h 24小时成交量，以币为单位
+# 					open24h 24小时开盘价
+# 					high24h 24小时最高价
+# 					low24h 24小时最低价
+# 					sodUtc0 UTC 0 时开盘价
+# 					sodUtc8 UTC+8 时开盘价
+# 					ts 数据更新时间戳
+# 	:return:
+# 	"""
+# 	logging.debug(f"行情频道推送消息\t{instId}\t{datas}")
+# 	for data in datas:
+# 		assert data['instId'] == instId
+# 		is_swap = instId.endswith("-SWAP")
+# 		if is_swap:
+# 			ctVal = Instruments.ctVal("SWAP", instId)
+# 			data["lastSz"] = str(int(data["lastSz"]) * ctVal)
+# 			data["askSz"] = str(int(data["askSz"]) * ctVal)
+# 			data["bidSz"] = str(int(data["bidSz"]) * ctVal)
+# 		# todo 在此处理实时行情数据
+# 		item_unix_ts = int(data['ts'])
+# 		local_unix_ts = HeaderUtils.get_unix_timestamp_ns()
+# 		data['timestamp'] = item_unix_ts
+# 		data['exchange'] = 'okex'
+# 		data['asset_type'] = 'swap' if is_swap else 'spot'
+# 		data['symbol'] = instId
+# 		data['local_timestamp'] = local_unix_ts
+# 		data['time'] = HeaderUtils.get_timestamp(item_unix_ts, False)
+# 		data['local_time'] = HeaderUtils.get_timestamp(local_unix_ts, False)
+# if instId == Currency.BTCUSDT:
+#     Market.spot_tick_line.append(data)
+# elif instId == Currency.BTCUSDT_SWAP:
+#     Market.swap_tick_line.append(data)
 
 
 local_ts_cache = {
@@ -158,14 +183,6 @@ def trade_handle(instId: str, datas, source_type="推送"):
 			line_append(mkt.spot_trade_line, data)
 		elif instId == Currency.BTCUSDT_SWAP:
 			line_append(mkt.swap_trade_line, data)
-
-
-def books_handle_proxy(instId: str, datas):
-	books_lock.acquire()
-	try:
-		books_handle(instId, datas)
-	finally:
-		books_lock.release()
 
 
 limit_ts = 0
